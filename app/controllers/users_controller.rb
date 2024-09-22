@@ -8,13 +8,14 @@ class UsersController < ApplicationController
   end
 
   def create
-    # #@user = User.new(params[:user]) # 実装は終わっていないことに注意!
-    # Above had mass assignment vulneravility on Rails 4.0, disturbing and stealing admin priviledge by adding admin/1 name attribute in (params[:user])
+    # previous grammer on @user had mass assignment vulneravility on Rails 4.0, disturbing and stealing admin priviledge by adding admin/1 name attribute in (params[:user])
     @user = User.new(user_params)
-
     if @user.save
-      flash[:success] = "Welcome to the Sample App!"
-      redirect_to @user
+      reset_session
+      log_in @user
+      flash[:success] = 'Welcome to the Sample App!'
+      # added "and return" since DoubleRenderError had occured.
+      redirect_to @user and return
     else
       render 'new', status: :unprocessable_entity
     end
