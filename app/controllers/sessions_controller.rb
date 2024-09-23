@@ -2,13 +2,17 @@ class SessionsController < ApplicationController
   def new; end
 
   def create
-    user = User.find_by(email: params[:session][:email].downcase)
-    if user&.authenticate(params[:session][:password])
+    #added @ to a local variable user, to access virtual remember_token attribute from
+    #test/integration/users/login_test.rb
+    @user = User.find_by(email: params[:session][:email].downcase)
+    if @user&.authenticate(params[:session][:password])
       # ユーザーログイン後にユーザー情報のページにリダイレクトする
       # ログインの直前に必ずreset_session method でセッション固定攻撃対策
       reset_session
-      log_in user
-      redirect_to user
+      params[:session][:remember_me] == '1' ? remember(@user) : forget(@user)
+
+      log_in @user
+      redirect_to @user
     else
       flash.now[:danger] = 'Invalid email/password combination'
       render 'new', status: :unprocessable_entity
@@ -16,7 +20,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    log_out
+    log_out if logged_in?
     redirect_to root_url, status: :see_other
   end
 end
