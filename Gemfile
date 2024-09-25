@@ -16,6 +16,9 @@ gem 'stimulus-rails',  '1.2.1'
 gem 'turbo-rails',     '1.4.0'
 # #bcrypt added on sign_up branch to make login system
 gem 'bcrypt'
+gem 'bootstrap-will_paginate', '1.0.0'
+gem 'faker', '2.21.0'
+gem 'will_paginate', '3.3.1'
 
 group :development, :test do
   gem 'debug', '1.7.1', platforms: %i[mri mingw x64_mingw]
@@ -40,7 +43,7 @@ group :test do
 end
 
 group :production do
-  gem "pg", "1.3.5"
+  gem 'pg', '1.3.5'
 end
 
 # Windows ではタイムゾーン情報用の tzinfo-data gem を含める必要があります

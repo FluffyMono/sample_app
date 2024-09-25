@@ -2,17 +2,18 @@ class SessionsController < ApplicationController
   def new; end
 
   def create
-    #added @ to a local variable user, to access virtual remember_token attribute from
-    #test/integration/users/login_test.rb
+    # added @ to a local variable user, to access virtual remember_token attribute from
+    # test/integration/users/login_test.rb
     @user = User.find_by(email: params[:session][:email].downcase)
     if @user&.authenticate(params[:session][:password])
+      forwarding_url = session[:forwarding_url]
       # ユーザーログイン後にユーザー情報のページにリダイレクトする
       # ログインの直前に必ずreset_session method でセッション固定攻撃対策
       reset_session
       params[:session][:remember_me] == '1' ? remember(@user) : forget(@user)
 
       log_in @user
-      redirect_to @user
+      redirect_to forwarding_url || @user
     else
       flash.now[:danger] = 'Invalid email/password combination'
       render 'new', status: :unprocessable_entity
