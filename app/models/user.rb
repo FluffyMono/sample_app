@@ -1,6 +1,8 @@
 class User < ApplicationRecord
-  before_save { email.downcase! }
-  attr_accessor :remember_token
+  attr_accessor :remember_token, :activation_token
+
+  before_save   :downcase_email
+  before_create :create_activation_digest
 
   validates :name, presence: true, length: { maximum: 50 }
 
@@ -34,21 +36,43 @@ class User < ApplicationRecord
     remember_digest
   end
 
-    # セッションハイジャック防止のためにセッショントークンを返す
+  # セッションハイジャック防止のためにセッショントークンを返す
   # この記憶ダイジェストを再利用しているのは単に利便性のため
   def session_token
     remember_digest || remember
   end
 
   # 渡されたトークンがダイジェストと一致したらtrueを返す
-  def authenticated?(remember_token)
-    return false if remember_digest.nil?
+  def authenticated?(attribute, token)
+    digest = send("#{attribute}_digest")
+    return false if digest.nil?
 
-    BCrypt::Password.new(remember_digest).is_password?(remember_token)
+    BCrypt::Password.new(digest).is_password?(token)
   end
 
   # ユーザーのログイン情報を破棄する
   def forget
     update_attribute(:remember_digest, nil)
+  end
+
+  def send_activation_email
+    UserMailer.account_activation(self).deliver_now
+  end
+
+  def activate
+    update(activated: true, activated_at: Time.zone.now)
+  end
+
+  private
+
+  # メールアドレスをすべて小文字にする
+  def downcase_email
+    self.email = email.downcase
+  end
+
+  # 有効化トークンとダイジェストを作成および代入する
+  def create_activation_digest
+    self.activation_token  = User.new_token
+    self.activation_digest = User.digest(activation_token)
   end
 end

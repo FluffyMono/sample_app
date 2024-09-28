@@ -64,6 +64,20 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
+  # mailgun
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.delivery_method = :smtp
+  host = 'https://sample_app.onrender.com'
+  config.action_mailer.default_url_options = { host: }
+  ActionMailer::Base.smtp_settings = {
+    port: 587,
+    address: 'smtp.mailgun.org',
+    user_name: ENV['Yuki Yoshino'],
+    password: ENV['&Bx8PVPQ4*nuv-K'],
+    domain: host,
+    authentication: :plain
+  }
+
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false

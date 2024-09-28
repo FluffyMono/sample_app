@@ -19,10 +19,16 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      reset_session
-      log_in @user
-      flash[:success] = 'Welcome to the Sample App!'
-      redirect_to @user
+      # commented out after shipping user authentication method
+      # reset_session
+      # log_in @user
+      # flash[:success] = 'Welcome to the Sample App!'
+      # redirect_to @user
+      # below instead, redirecting to root url since deved preventing editing other users authenticating etc on rails tutorial chap 10's merge
+
+      @user.send_activation_email
+      flash[:info] = 'Please check your email to activate your account.'
+      redirect_to root_url
     else
       render 'new', status: :unprocessable_entity
     end
