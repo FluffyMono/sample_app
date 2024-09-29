@@ -67,13 +67,13 @@ Rails.application.configure do
   # mailgun
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.delivery_method = :smtp
-  host = 'https://sample_app.onrender.com'
+  host = 'https://sample-app-w6p2.onrender.com'
   config.action_mailer.default_url_options = { host: }
   ActionMailer::Base.smtp_settings = {
     port: 587,
     address: 'smtp.mailgun.org',
-    user_name: ENV['Yuki Yoshino'],
-    password: ENV['&Bx8PVPQ4*nuv-K'],
+    user_name: ENV['MAILGUN_SMTP_LOGIN'],
+    password: ENV['MAILGUN_SMTP_PASSWORD'],
     domain: host,
     authentication: :plain
   }
